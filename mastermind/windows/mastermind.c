@@ -240,7 +240,7 @@ int main (void){
     printf("drcke eine belibige Taste...");
     getchar();
     system("cls");
-    printf("Whlen sie eine schwirigkeits Stufe:\n"
+    printf("Whlen sie eine schwierigkeits Stufe:\n"
            "Einfach(1)        [4 Stellen, keine gleichen Zahlen,8 Versuche]\n"
            "Herausfordernd(2) [4 Stellen, 6 Versuche]\n"
            "Schwer(3)         [8 Stellen, 6 Versuche]\n"
