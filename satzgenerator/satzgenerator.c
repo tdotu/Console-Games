@@ -1,7 +1,7 @@
 /*
 	 Copyright 2012 Simon Diepold all rights reserved
 
-	 Mastermind is free software: you can redistribute it and/or modify
+	 Der Satzgenerator is free software: you can redistribute it and/or modify
 	 it under the terms of the GNU General Public License as published by
 	 the Free Software Foundation, either version 3 of the License, or
 	 any later version.
@@ -15,7 +15,7 @@
 	 along with Universe Kernel.  If not, see <http://www.gnu.org/licenses/>.
 
 
-	 Mastermind ist Freie Software: Sie koennen es unter den Bedingungen
+	 Der Satzgenerator ist Freie Software: Sie koennen es unter den Bedingungen
 	 der GNU General Public License, wie von der Free Software Foundation,
 	 Version 3 der Lizenz oder jeder spaeteren
 	 veroeffentlichten Version, weiterverbreiten und/oder modifizieren.
