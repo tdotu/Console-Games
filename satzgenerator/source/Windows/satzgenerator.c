@@ -33,8 +33,6 @@
  /*
     authors:
     -Simon Diepold aka. Tdotu simon.diepold@infinitycoding.de
-
-
  */
 
 #include <stdint.h>
@@ -43,8 +41,6 @@
 #include <string.h>
 #include <ctype.h>
 
-char *gets(char *puffer);
-char *fgets(char *puffer, int n, FILE *datei);
 
 int A = 0;
 int B = 0;
@@ -85,31 +81,51 @@ char *get_rand_string(char* buff, int n, char area){
     break; //just to keeep conventions
 
     }
-
+    int x;
     int line = (rand()%(area_end-area_beginn))+area_beginn;
     fseek(src, 0L, SEEK_SET);
     int i;
     for(i = 0; i <= line; i++){
         if(i == line){
-            int x;
             for(x = 0; x < n; x++){
                 buff[x] = 0;
             }
         }
+
         fgets(buff, n, src);
+    }
+
+    for(i=0;i<n && buff[i]==' ' && buff[i]!='\n' ;i++){}
+
+    while(buff[i]=='\n')
+    {
+        line = ((line+1)%(area_end-area_beginn))+area_beginn;
+        fseek(src, 0L, SEEK_SET);
+        int j;
+        for(j = 0;j <= line; j++)
+        {
+            if(j == line)
+            {
+                for(x = 0;x < n;x++)
+                {
+                    buff[x] = 0;
+                }
+            }
+            fgets(buff, n, src);
+        }
+        for(i=0;i<n && buff[i]==' ' && buff[i]!='\n' ;i++){}
     }
 
     return buff;
 }
 
 int main(void){
-    system("title Satzgenerator");
     src = fopen("config.txt", "r");
     char buffer[256];
-
     if(src == NULL){
         printf("Die Datei config.txt konnte nicht gefunden werden!\nKopieren sie diese Datei bitte in ihr aktuelles Arbeitsverzeichniss oder\nerstellen sie diese bitte neu.\n");
-        system("pause"); //Windows Only
+        printf("Drücken sie eine beliebige Taste um das Programm zu beenden \n");
+        system("read ANSWER");
         return 1;
     }
 
