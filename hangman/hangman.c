@@ -15,8 +15,6 @@ int main(int argc, char **argv)
 {
     initRandomGenerator();
 
-    words = loadWordFile("test.hmn");
-
     mainMenue();
 
     return 0;
@@ -61,11 +59,15 @@ void mainMenue()
                 mainMenueOption7();
             break;
 
+            case 8:
+                mainMenueOption8();
+            break;
+
             default:
                 mainMenueOptionDefault();
             break;
         }
-    }while(option != 7);
+    }while(option != 8);
 }
 
 
@@ -73,7 +75,6 @@ int printMenue()
 {
     int choice = 0;
 
-    printf("\n");
     printf("Main menu\n");
     printf("---------\n");
     printf("\n");
@@ -82,9 +83,9 @@ int printMenue()
     printf("3. Load a word library\n");
     printf("4. Enter a word by hand\n");
     printf("5. Save the loaded words to a new word library\n");
-    printf("5. Unload all words\n");
-    printf("6. Show the credits\n");
-    printf("7. Exit this program\n");
+    printf("6. Unload all words\n");
+    printf("7. Show the credits\n");
+    printf("8. Exit this program\n");
     printf("\n");
     printf("Your selection: < >\b\b");
     scanf("%d", &choice);
@@ -118,42 +119,94 @@ void mainMenueOption1()
         printf("Don't worry.\n");
         printf("Maybe you'll win next time.\n");
     }
+
+    waitKey();
 }
 
 
 void mainMenueOption2()
 {
-    printf("This option is not implemented yet.\n");
+    char word[MAX_WORD_LENGTH];
+    enterWord(word);
+
+    printf("\n");
+
+    if(askWord(word, STANDART_NUMBER_OF_GUESSES) == TRUE)
+    {
+        printf("Gratulations!\n");
+        printf("You found the word!\n");
+    }
+    else
+    {
+        printf("Don't worry.\n");
+        printf("Maybe you'll win next time.\n");
+    }
+
+    waitKey();
 }
 
 
 void mainMenueOption3()
 {
-    printf("This option is not implemented yet.\n");
+    char libraryName[MAX_FILENAME_LENGTH];
+    enterFilename(libraryName);
+
+    printf("Loading library %s...\n", libraryName);
+    loadWordFileExtended(libraryName, words);
+    printf("Finished.\n");
+
+    waitKey();
 }
 
 
 void mainMenueOption4()
 {
-    printf("This option is not implemented yet.\n");
+    char *word = (char *)malloc(sizeof(char) * MAX_WORD_LENGTH);
+    enterWord(word);
+
+    appendWordList(words, word);
+
+    printf("List appended.\n");
+
+    waitKey();
 }
 
 
 void mainMenueOption5()
 {
-    printf("Unloading all words...\n");
-    deleteAllElements(words);
-    printf("All words unloaded.\n");
+    char filename[MAX_FILENAME_LENGTH];
+    saveMode mode;
+
+    enterFilename(filename);
+    mode = enterSaveMode();
+
+    printf("Saving Library...\n");
+    saveWordList(filename, mode, words);
+    printf("Finished.\n");
+
+    waitKey();
 }
 
 
 void mainMenueOption6()
 {
-    printf("This option is not implemented yet.\n");
+    printf("Unloading all words...\n");
+    deleteAllElements(words);
+    printf("All words unloaded.\n");
+
+    waitKey();
 }
 
 
 void mainMenueOption7()
+{
+    printCredits();
+
+    waitKey();
+}
+
+
+void mainMenueOption8()
 {
     printf("Program will be ended...\n");
 }
@@ -162,6 +215,76 @@ void mainMenueOption7()
 void mainMenueOptionDefault()
 {
     printf("Your choosen selection does not exist.\n");
+
+    waitKey();
+}
+
+
+void printCredits()
+{
+    printf("Credits\n");
+    printf("-------\n");
+    printf("\n");
+    printf("Idea:\t\t\tPeter Hoesch\n");
+    printf("Programming:\t\tPeter Hoesch\n");
+    printf("Tests:\t\t\tPeter Hoesch\n");
+}
+
+
+char *enterFilename(char *buffer)
+{
+    printf("Enter the filename: ");
+    scanf("%s", buffer);
+
+    return buffer;
+}
+
+
+saveMode enterSaveMode()
+{
+    saveMode mode = UNKNOWN;
+
+    do
+    {
+        printf("\n");
+        printf("Mode:\n");
+        printf("1. Append\n");
+        printf("2. Overwrite\n");
+        printf("Your selection: < >\b\b");
+        scanf("%u", &mode);
+
+        if(mode != APPEND && mode != OVERWRITE)
+            printf("\nThis selection is not valid.\n");
+
+    }while(mode != APPEND && mode != OVERWRITE);
+
+    return mode;
+}
+
+
+char *enterWord(char *buffer)
+{
+    printf("Enter the word: ");
+    scanf("%s", buffer);
+
+    return buffer;
+}
+
+
+int waitKey()
+{
+    int key = 0;
+
+    printf("\nPress enter to continue...\n");
+
+    getchar();
+
+    do
+    {
+        key = getchar();
+    }while(key != '\n');
+
+    return key;
 }
 
 
@@ -242,7 +365,7 @@ guessedCorrectly askCharacter(char *finalWord, char *currentWord, char *triedCha
 
 truth checkSolved(char *finalWord, char *currentWord)
 {
-    if(!strncmp(finalWord, currentWord, MAX_WORDLENGTH))
+    if(!strncmp(finalWord, currentWord, MAX_WORD_LENGTH))
         return TRUE;
 
     return FALSE;
@@ -344,7 +467,7 @@ char *getElement(wordList *wl, int element)
             listIterator = listIterator->next;
         else
         {
-            printf("unable to get element %d from list %p\n", element, wl);
+            printf("Unable to get element %d from list %p.\n", element, wl);
             return NULL;
         }
     }
@@ -370,7 +493,7 @@ char *readLine(FILE *stream)
     line = (char *)malloc((sizeof(char) * (charCounter + 1)));
 
     fseek(stream, SEEK_SET, lineBegin);
-    fgets(line, MAX_WORDLENGTH, stream);
+    fgets(line, MAX_WORD_LENGTH, stream);
     line[charCounter-1] = '\0';
 
     for(charCounter = 0; line[charCounter] != '\0'; charCounter++)
@@ -381,20 +504,13 @@ char *readLine(FILE *stream)
 }
 
 
-wordList *loadWordFile(char *filename)
-{
-    wordList *newList = createWordList();
-    return addWordFile(filename, newList);
-}
-
-
 wordList *addWordFile(char *filename, wordList *wl)
 {
     FILE *f = fopen(filename, "r");
 
     if(f == NULL)
     {
-        printf("unable to read file %s\n", filename);
+        printf("Unable to read file %s\n", filename);
         return NULL;
     }
 
@@ -407,6 +523,57 @@ wordList *addWordFile(char *filename, wordList *wl)
     fclose(f);
 
     return wl;
+}
+
+
+
+wordList *loadWordFile(char *filename)
+{
+    wordList *newList = createWordList();
+    return addWordFile(filename, newList);
+}
+
+
+wordList *loadWordFileExtended(char *filename, wordList *wordlist)
+{
+    if(wordlist == NULL)
+        wordlist = loadWordFile(filename);
+    else
+        addWordFile(filename, wordlist);
+
+    return wordlist;
+}
+
+
+void saveWordList(char *filename, saveMode mode, wordList *wl)
+{
+    char mode_str[2];
+    FILE *f = NULL;
+    wordListEntry *iterator = NULL;
+
+    memset(mode_str, '\0', sizeof(mode_str));
+
+    switch(mode)
+    {
+        case APPEND:
+            mode_str[0] = 'a';
+        break;
+
+        case OVERWRITE:
+            mode_str[0] = 'w';
+        break;
+
+        default:
+            printf("Something went wrong (unable to save file).\n");
+        break;
+    }
+
+    f = fopen(filename, mode_str);
+
+    for(iterator = wl->first->next; iterator != NULL; iterator = iterator->next)
+    {
+        fprintf(f, "%s\n", iterator->word);
+    }
 }
 
 

@@ -3,10 +3,11 @@
 
 
 
-#define MAX_WORDLENGTH 30
+#define MAX_WORD_LENGTH 30
+#define MAX_FILENAME_LENGTH 50
 #define LETTERS_IN_ALPHABET 62
 
-#define STANDART_NUMBER_OF_GUESSES 10
+#define STANDART_NUMBER_OF_GUESSES 11
 
 
 enum truth
@@ -17,6 +18,11 @@ enum truth
 enum guessedCorrectly
 {
     YES, NO, AGAIN
+};
+
+enum saveMode
+{
+    UNKNOWN = 0, APPEND = 1, OVERWRITE = 2
 };
 
 
@@ -35,9 +41,12 @@ struct wordList
 
 typedef enum truth truth;
 typedef enum guessedCorrectly guessedCorrectly;
+typedef enum saveMode saveMode;
 typedef struct wordListEntry wordListEntry;
 typedef struct wordList wordList;
 
+
+int main(int argc, char **argv);
 
 void mainMenue();
 int printMenue();
@@ -48,7 +57,14 @@ void mainMenueOption4();
 void mainMenueOption5();
 void mainMenueOption6();
 void mainMenueOption7();
+void mainMenueOption8();
 void mainMenueOptionDefault();
+
+void printCredits();
+char *enterFilename(char *buffer);
+saveMode enterSaveMode();
+char *enterWord(char *buffer);
+int waitKey();
 
 truth askWord(char *word, int maxGuesses);
 guessedCorrectly askCharacter(char *finalWord, char *currentWord, char *triedCharacters);
@@ -63,8 +79,10 @@ void deleteLastElement(wordList *wl);
 wordList *createWordList();
 char *getElement(wordList *wl, int element);
 char *readLine(FILE *stream);
-wordList *loadWordFile(char *filename);
 wordList *addWordFile(char *filename, wordList *wl);
+wordList *loadWordFile(char *filename);
+wordList *loadWordFileExtended(char *filename, wordList *wordlist);
+void saveWordList(char *filename, saveMode mode, wordList *wl);
 
 void initRandomGenerator();
 char *getRandomWord(wordList *wl);
